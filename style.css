@@ -1,0 +1,463 @@
+/* ─── Themes ──────────────────────────────────────────────────────────── */
+
+:root {
+  --bg:            #f0ece5;
+  --surface:       #e7e2da;
+  --surface-hover: #ddd8cf;
+  --border:        #ccc7bf;
+  --border-subtle: #e2ddd6;
+  --text:          #1c1917;
+  --text-dim:      #57534e;
+  --text-faint:    #a8a29e;
+  --accent:        #2f7d74;
+  --accent-dim:    rgba(47, 125, 116, 0.12);
+
+  --board-light:   #f0d9b5;
+  --board-dark:    #b58863;
+
+  --blunder:       #dc2626;
+  --mistake:       #ea580c;
+  --inaccuracy:    #ca8a04;
+  --good:          #16a34a;
+  --excellent:     #2563eb;
+  --brilliant:     #0891b2;
+
+  --eval-black:    #44403c;
+  --eval-white:    #e7e5e4;
+}
+
+[data-theme="dark"] {
+  --bg:            #1c1917;
+  --surface:       #292524;
+  --surface-hover: #312e2b;
+  --border:        #44403c;
+  --border-subtle: #2c2927;
+  --text:          #e7e5e4;
+  --text-dim:      #a8a29e;
+  --text-faint:    #57534e;
+  --accent:        #5fb3a9;
+  --accent-dim:    rgba(95, 179, 169, 0.16);
+
+  --board-light:   #f0d9b5;
+  --board-dark:    #b58863;
+
+  --blunder:       #ef4444;
+  --mistake:       #f97316;
+  --inaccuracy:    #eab308;
+  --good:          #22c55e;
+  --excellent:     #3b82f6;
+  --brilliant:     #06b6d4;
+
+  --eval-black:    #1c1917;
+  --eval-white:    #e7e5e4;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:            #1c1917;
+    --surface:       #292524;
+    --surface-hover: #312e2b;
+    --border:        #44403c;
+    --border-subtle: #2c2927;
+    --text:          #e7e5e4;
+    --text-dim:      #a8a29e;
+    --text-faint:    #57534e;
+    --accent:        #5fb3a9;
+    --accent-dim:    rgba(95, 179, 169, 0.16);
+
+    --blunder:       #ef4444;
+    --mistake:       #f97316;
+    --inaccuracy:    #eab308;
+    --good:          #22c55e;
+    --excellent:     #3b82f6;
+    --brilliant:     #06b6d4;
+
+    --eval-black:    #1c1917;
+    --eval-white:    #e7e5e4;
+  }
+}
+
+/* ─── Base ────────────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s, color 0.2s;
+}
+
+/* ─── Header ─────────────────────────────────────────────────────────── */
+
+#topbar {
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+#topbar h1 {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  color: var(--text);
+}
+
+#engine-status {
+  font-size: 12px;
+  color: var(--text-faint);
+  transition: color 0.3s;
+}
+
+#engine-status.ready { color: var(--good); }
+
+#btn-theme {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.15s, color 0.15s;
+  line-height: 1;
+}
+
+#btn-theme:hover {
+  border-color: var(--text-dim);
+  color: var(--text);
+}
+
+/* ─── Layout ──────────────────────────────────────────────────────────── */
+
+#layout {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 520px) 240px;
+  grid-template-areas: "evalbar board moves";
+  gap: 20px;
+  max-width: 860px;
+  margin: 28px auto;
+  padding: 0 28px;
+  flex: 1;
+  align-items: start;
+}
+
+/* ─── Eval Bar ────────────────────────────────────────────────────────── */
+
+#eval-bar-container {
+  grid-area: evalbar;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+@keyframes eval-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.25; }
+}
+
+#eval-bar {
+  width: 6px;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+#eval-bar.loading {
+  animation: eval-pulse 1.4s ease-in-out infinite;
+}
+
+#eval-bar-black {
+  background: var(--eval-black);
+  transition: height 0.4s ease;
+}
+
+#eval-bar-white {
+  background: var(--eval-white);
+  transition: height 0.4s ease;
+}
+
+#eval-score {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-faint);
+  writing-mode: vertical-lr;
+  transform: rotate(180deg);
+  letter-spacing: 0.3px;
+  font-variant-numeric: tabular-nums;
+}
+
+#eval-score.loading { opacity: 0.3; }
+
+/* ─── Board ───────────────────────────────────────────────────────────── */
+
+#board-section {
+  grid-area: board;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#board-container {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.08);
+}
+
+#board { width: 100%; height: 100%; }
+
+.cm-chessboard .board .square.white { fill: var(--board-light); }
+.cm-chessboard .board .square.black { fill: var(--board-dark); }
+
+/* ─── Controls ────────────────────────────────────────────────────────── */
+
+#controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#controls button {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 5px 11px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+#controls button:hover:not(:disabled) {
+  border-color: var(--text-dim);
+  color: var(--text);
+}
+
+#controls button:disabled { opacity: 0.25; cursor: default; }
+
+#thinking-indicator {
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-left: 8px;
+}
+
+/* ─── Input ───────────────────────────────────────────────────────────── */
+
+#input-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#pgn-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.6;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s, background 0.2s;
+  caret-color: var(--accent);
+}
+
+#pgn-input::placeholder { color: var(--text-faint); }
+#pgn-input:focus { border-color: var(--accent); background: var(--bg); }
+
+#input-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+#btn-load {
+  background: var(--accent);
+  border: none;
+  color: #fff;
+  padding: 7px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: opacity 0.15s;
+}
+
+#btn-load:hover { opacity: 0.88; }
+
+#btn-flip,
+#btn-best-move {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+#btn-flip:hover,
+#btn-best-move:hover {
+  border-color: var(--text-dim);
+  color: var(--text);
+}
+
+#btn-best-move.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+#error-msg {
+  font-size: 12px;
+  color: var(--blunder);
+}
+
+/* ─── Move List ───────────────────────────────────────────────────────── */
+
+#move-list-container { grid-area: moves; }
+
+#move-list-container h2 {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-faint);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: 4px;
+}
+
+#move-list-scroll {
+  max-height: 520px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+#move-list-empty {
+  padding: 16px 0;
+  color: var(--text-faint);
+  font-size: 13px;
+}
+
+#move-list {
+  width: 100%;
+  border-collapse: collapse;
+  display: none;
+}
+
+#move-list.visible { display: table; }
+
+.col-num   { width: 28px; }
+.col-white { width: 50%; }
+.col-black { width: 50%; }
+
+#move-list thead th {
+  padding: 4px 6px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text-faint);
+  text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#move-list-body tr:hover { background: var(--surface-hover); }
+
+#move-list-body td {
+  padding: 4px 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.move-num {
+  color: var(--text-faint);
+  font-size: 11px;
+  text-align: right;
+  padding-right: 8px !important;
+  cursor: default !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.move-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+td.active-move {
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 500;
+  border-radius: 4px;
+}
+
+/* ─── Badges ──────────────────────────────────────────────────────────── */
+
+.badge {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.badge.brilliant  { background: var(--brilliant); }
+.badge.excellent  { background: var(--excellent); }
+.badge.good       { background: var(--good); }
+.badge.inaccuracy { background: var(--inaccuracy); }
+.badge.mistake    { background: var(--mistake); }
+.badge.blunder    { background: var(--blunder); }
+
+/* ─── Arrow ───────────────────────────────────────────────────────────── */
+
+.cm-chessboard .arrow-info .arrow-head {
+  fill: var(--accent);
+  fill-rule: nonzero;
+  opacity: 0.85;
+}
+.cm-chessboard .arrow-info .arrow-line {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  stroke-width: 5px;
+  opacity: 0.7;
+}
+
+/* ─── Mobile ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  #layout {
+    grid-template-columns: 12px 1fr;
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      "evalbar board"
+      ". moves";
+    padding: 0 16px;
+    margin: 16px auto;
+  }
+
+  #move-list-scroll { max-height: 280px; }
+}

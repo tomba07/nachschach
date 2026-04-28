@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nachschach — Chess Analysis</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cm-chessboard@8.12.7/assets/chessboard.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cm-chessboard@8.12.7/assets/extensions/arrows/arrows.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header id="topbar">
+    <h1>Nachschach</h1>
+    <span id="engine-status">Engine loading…</span>
+    <button id="btn-theme" title="Toggle light/dark mode" aria-label="Toggle theme">☀</button>
+  </header>
+
+  <main id="layout">
+
+    <!-- LEFT: Eval bar -->
+    <aside id="eval-bar-container">
+      <div id="eval-bar">
+        <div id="eval-bar-black"></div>
+        <div id="eval-bar-white"></div>
+      </div>
+      <div id="eval-score">0.0</div>
+    </aside>
+
+    <!-- CENTER: Board + controls + input -->
+    <section id="board-section">
+      <div id="board-container">
+        <div id="board"></div>
+      </div>
+
+      <div id="controls">
+        <button id="btn-start" title="Go to start">⏮</button>
+        <button id="btn-prev"  title="Previous move">◀</button>
+        <button id="btn-next"  title="Next move">▶</button>
+        <button id="btn-end"   title="Go to end">⏭</button>
+        <span id="thinking-indicator" hidden>Analysing…</span>
+      </div>
+
+      <div id="input-panel">
+        <textarea id="pgn-input" placeholder="Paste PGN or FEN here…" rows="5" spellcheck="false"></textarea>
+        <div id="input-buttons">
+          <button id="btn-load">Load</button>
+          <button id="btn-flip">Flip Board</button>
+          <button id="btn-best-move" title="Toggle best move arrow">Best Move: Off</button>
+        </div>
+        <div id="error-msg" hidden></div>
+      </div>
+    </section>
+
+    <!-- RIGHT: Move list -->
+    <aside id="move-list-container">
+      <h2>Moves</h2>
+      <div id="move-list-scroll">
+        <table id="move-list">
+          <thead>
+            <tr>
+              <th class="col-num">#</th>
+              <th class="col-white">White</th>
+              <th class="col-black">Black</th>
+            </tr>
+          </thead>
+          <tbody id="move-list-body"></tbody>
+        </table>
+        <div id="move-list-empty">Load a game to begin analysis</div>
+      </div>
+    </aside>
+
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
