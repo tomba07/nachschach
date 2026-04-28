@@ -184,14 +184,7 @@ function onAnalysisComplete(bestMoveLan) {
   pos.cp       = normalizeCp(rawCp, pos.fen);
   pos.bestMove = info.bestMoveLan || bestMoveLan;
 
-  // Classify the move that led to this position (index > 0)
-  if (index > 0 && state.positions[index - 1].cp !== null) {
-    classifyMove(index);
-  }
-  // If this is position 0 (start), try to classify position 1 if its cp is known
-  if (index === 0 && state.positions.length > 1 && state.positions[1].cp !== null) {
-    classifyMove(1);
-  }
+  classifyAround(index);
 
   state.engineBusy = false;
   state.currentAnalysisIndex = null;
@@ -216,20 +209,35 @@ function classifyMove(index) {
   if (prev.cp === null || curr.cp === null) return;
 
   // Both cp values are white-normalized (positive = white advantage).
-  // From the mover's perspective: how many cp did THEY lose?
   const whiteToMove = prev.fen.includes(' w ');
-  // moverLoss > 0 means their side got weaker; < 0 means they improved position
-  const moverLoss = whiteToMove ? (prev.cp - curr.cp) : (curr.cp - prev.cp);
+  const before = whiteToMove ? winProb(prev.cp) : 1 - winProb(prev.cp);
+  const after = whiteToMove ? winProb(curr.cp) : 1 - winProb(curr.cp);
+  const lossPct = (before - after) * 100;
+  const ply = index;
+  const thresholds = ply <= 20
+    ? { brilliant: -7, excellent: 2, good: 5, inaccuracy: 10, mistake: 20 }
+    : { brilliant: -5, excellent: 1.5, good: 3.5, inaccuracy: 8, mistake: 16 };
 
   let classification;
-  if      (moverLoss < -50)  classification = 'brilliant';
-  else if (moverLoss <=  0)  classification = 'excellent';
-  else if (moverLoss <= 20)  classification = 'good';
-  else if (moverLoss <= 50)  classification = 'inaccuracy';
-  else if (moverLoss <= 150) classification = 'mistake';
-  else                       classification = 'blunder';
+  if      (lossPct <= thresholds.brilliant)  classification = 'brilliant';
+  else if (lossPct <= thresholds.excellent)  classification = 'excellent';
+  else if (lossPct <= thresholds.good)       classification = 'good';
+  else if (lossPct <= thresholds.inaccuracy) classification = 'inaccuracy';
+  else if (lossPct <= thresholds.mistake)    classification = 'mistake';
+  else                                       classification = 'blunder';
 
   curr.classification = classification;
+}
+
+function classifyAround(index) {
+  if (index > 0) {
+    classifyMove(index);
+    updateMoveListBadge(index);
+  }
+  if (index + 1 < state.positions.length) {
+    classifyMove(index + 1);
+    updateMoveListBadge(index + 1);
+  }
 }
 
 // ─── Eval Bar ─────────────────────────────────────────────────────────────────
